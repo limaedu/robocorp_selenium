@@ -20,7 +20,7 @@ class SitePage:
 
     def __init__(self, driver: WebDriver):
         self.driver = driver
-        self.selectors: Dict[str, Tuple[str, str]] = {
+        self.__selectors: Dict[str, Tuple[str, str]] = {
             "search_button": (By.CSS_SELECTOR, '[class*="search-trigger"]'),
             "search_field": (By.CSS_SELECTOR, '[title="Type search term here"]'),
             "submit_search_button": (By.CSS_SELECTOR, 'button[aria-label*="Search"]'),
@@ -34,11 +34,11 @@ class SitePage:
         }
 
     def __find_element(self, name: str, driver_or_element: WebElement | WebDriver) -> WebDriverWait:
-        by, value = self.selectors[name]
+        by, value = self.__selectors[name]
         return WebDriverWait(driver_or_element, 10).until(EC.element_to_be_clickable((by, value)))
 
     def __find_elements(self, name: str, driver_or_element: WebElement | WebDriver) -> WebDriverWait:
-        by, value = self.selectors[name]
+        by, value = self.__selectors[name]
         return WebDriverWait(driver_or_element, 10).until(EC.presence_of_all_elements_located((by, value)))
 
     def __sort_results(self) -> None:
