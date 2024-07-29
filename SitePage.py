@@ -42,6 +42,14 @@ class SitePage:
         return WebDriverWait(driver_or_element, 10).until(EC.presence_of_all_elements_located((by, value)))
 
     def __sort_results(self) -> None:
+        """
+        This function sorts the results by date
+
+        It follows the steps:
+            - Clicks on sort dropdown
+            - Selects date option
+            - Executes
+        """
         log.info('Sorting results by date.')
 
         try:
@@ -54,6 +62,11 @@ class SitePage:
         log.info('Results sorted.')
 
     def __download_image(self, url: str, file_path: str) -> None:
+        """
+        This function downloads a public image using a HTTP request for the input url
+        and saves into a local folder
+
+        """
         log.debug(f'Downloading image at {url}.')
 
         try:
@@ -67,6 +80,11 @@ class SitePage:
         log.debug('Image downloaded.')
 
     def __take_screenshot(self, url: str, file_path: str) -> None:
+        """
+        This function takes a screenshot by opening the input url in a new Chrome tab
+        and saves into a local folder
+        
+        """
         log.debug(f'Taking screenshot at {url}.')
 
         try:
@@ -82,16 +100,32 @@ class SitePage:
         log.debug('Screenshot taken.')
 
     def __extract_date(self, string: str) -> str:
-        match = re.search(r'\d{1,2} \w{3} \d{4}', string)  # Format 18 JUL 2024
+        """
+        This function finds the date pattern "DD M YYYY" in a string.
+
+        Example: 
+            - Input string: Updated on 18 Jul 2024
+            - Return: 18 Jul 2024 
+        
+        """
+        match = re.search(r'\d{1,2} \w{3} \d{4}', string) 
         if match:
             return match.group(0)
         return ""
 
     def __contains_money(self, string: str) -> bool:
+        """
+        This function verifies if the input string has one of the following currency patterns:
+
+            - $111,111.11
+            - 11 dollars
+            - 11 USD
+        
+        """
         money_patterns = [
-            r'\$\d{1,3}(,\d{3})*(\.\d{1,2})?',  # Format $111,111.11
-            r'\d{1,3}(,\d{3})*(\.\d{1,2})? dollars',  # Format 11 dollars
-            r'\d{1,3}(,\d{3})*(\.\d{1,2})? USD'  # Format 11 USD
+            r'\$\d{1,3}(,\d{3})*(\.\d{1,2})?',  
+            r'\d{1,3}(,\d{3})*(\.\d{1,2})? dollars',  
+            r'\d{1,3}(,\d{3})*(\.\d{1,2})? USD'  
         ]
         for pattern in money_patterns:
             if re.search(pattern, string):
@@ -99,21 +133,40 @@ class SitePage:
         return False
 
     def __parse_date(self, date_str: str) -> datetime:
+        """
+        This function converts an input string in the format '18 Jul 2024' into a datetime
+        
+        """
         try:
             return datetime.strptime(date_str, '%d %b %Y')
         except Exception as e:
             log.critical(f'Error parsing date: {e}')
 
     def __clean_description(self, description: str) -> str:
+        """
+        This function removes unwanted characters from a string based on a pattern
+        
+        """
         match = re.search(r'\.\.\.\s*(.*)', description)
         if match:
             return match.group(1)
         return description
 
     def __count_search_phrase(self, text: str, search_phrase: str) -> int:
+        """
+        This function counts how many times an input string 'search_phrase' appears in a input string 'text'
+        
+        """
         return text.lower().count(search_phrase.lower())
 
     def __is_date_within_filter(self, month_filter: int, article_date: datetime) -> bool:
+        """
+        This function verifies if the input datetime 'article_date' is within an input 'month_filter'
+        that follows the following rule:
+        
+            - 0 or 1 - only the current month, 2 - current and previous month, 3 - current and two previous months, and so on
+        
+        """
         first_day_of_month = datetime(
             datetime.now().year, datetime.now().month, 1)
         if month_filter == 0:
@@ -128,6 +181,10 @@ class SitePage:
         return False
 
     def __save_to_excel(self, articles_data: list) -> None:
+        """
+        This function saves an input data 'articles_data' into an excel file
+        
+        """
         log.info("Generating excel.")
 
         try:
@@ -152,6 +209,10 @@ class SitePage:
         log.info("Excel generated.")
 
     def search(self, query: str) -> None:
+        """
+        This function searchs for a search phrase in the website and sorts it by date
+        
+        """
         log.info(f'Beginning search for {query}.')
 
         try:
@@ -168,6 +229,10 @@ class SitePage:
         log.info(f'Search for {query} successful.')
 
     def get_articles_info(self, month_filter: int, query: str) -> None:
+        """
+        This function extracts data from a website
+        
+        """
         log.info(f'Getting articles info.')
         finish = False
         articles_count = 0
